@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+<div class="shell">
+  <header class="top">
+    <div>
+      <p class="kicker">TOKEN RADAR &middot; DEFI LLAMA SNAPSHOT <span id="asOf"></span></p>
+      <h1>Which pre-token protocol is worth farming next?</h1>
+      <p class="lede">Every protocol below <strong>records no token</strong> in DefiLlama's record — that is never a claim it has none. Each row states what its launch would be worth if the market priced it like the tokens that already trade, and the exact steps to farm it.</p>
+    </div>
+    <dl class="stats" id="stats"></dl>
+  </header>
+
+  <section class="controls" aria-label="Filter and sort the board">
+    <label>Search <input id="q" type="search" placeholder="Protocol, chain or category…" autocomplete="off"></label>
+    <label>Category <select id="cat"><option value="">All categories</option></select></label>
+    <label>Chain <select id="chain"><option value="">All chains</option></select></label>
+    <label>Sort <select id="sort">
+      <option value="value">Implied value, high first</option>
+      <option value="tvl">TVL, high first</option>
+      <option value="growth">7-day growth, high first</option>
+      <option value="age">Age, oldest first</option>
+      <option value="name">Name, A to Z</option>
+    </select></label>
+    <label class="check"><input id="watchOnly" type="checkbox"> Watchlist only</label>
+    <p class="count" id="count" aria-live="polite"></p>
+  </section>
+
+  <main>
+    <table id="board">
+      <thead><tr>
+        <th data-sort="rank">#</th><th data-sort="name">Protocol</th><th>Category</th><th>Chains</th>
+        <th data-sort="tvl">TVL</th><th data-sort="growth">7d</th><th data-sort="age">Age</th>
+        <th data-sort="value">Implied value</th><th></th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="hint">Click a row — or its <b>Farm plan</b> button — for the protocol's detail view: the model breakdown and its six farm steps, with costs and times.</p>
+
+    <section id="detail" class="detail" hidden aria-label="Protocol detail"></section>
+
+    <section class="live">
+      <h2>Already trading — the market's own values</h2>
+      <p>These protocols record a token, so they are <strong>never ranked</strong> on this board. Their market-cap-to-TVL ratios are the peer anchors the model prices pre-token protocols against.</p>
+      <table id="liveTable">
+        <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Market cap</th><th>Mcap / TVL</th></tr></thead>
+        <tbody id="liveRows"></tbody>
+      </table>
+    </section>
+
+    <section class="method">
+      <h2>How the implied value is worked out</h2>
+      <p id="formula"></p>
+      <p>The peer ratio for a category is the median market-cap-to-TVL ratio of that category's live-token protocols (at least 3 peers); a thin category falls back to the global median. Growth is the protocol's own 7-day TVL change, clamped to −60%…+120%. Maturity is its age since DefiLlama began tracking it, capped at 3 years. Breadth is +3% per extra chain, at most +15%. No name is ever special-cased: the same function scores every row, and the board covers the whole watchlist plus every other rankable pre-token protocol the snapshot holds.</p>
+      <h3>Peer anchors by category</h3>
+      <ul class="peers" id="peers"></ul>
+      <p class="note">Implied value is this entry's own claim, never make.fun's. It does not predict whether or when a token is issued. Farm with a fresh wallet, only with funds you can afford to lose, and claim only from links the protocol itself publishes.</p>
+    </section>
+  </main>
+  <footer><p id="sourceLine"></p></footer>
+</div>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
