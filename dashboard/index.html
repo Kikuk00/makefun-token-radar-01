@@ -13,10 +13,18 @@
     <div>
       <p class="kicker">TOKEN RADAR &middot; DEFI LLAMA SNAPSHOT <span id="asOf"></span></p>
       <h1>Which pre-token protocol is worth farming next?</h1>
-      <p class="lede">Every protocol below <strong>records no token</strong> in DefiLlama's record — that is never a claim it has none. Each row states what its launch would be worth if the market priced it like the tokens that already trade, and the exact steps to farm it.</p>
+      <p class="lede">Every protocol in the pre-token view <strong>records no token</strong> in DefiLlama's record — that is never a claim it has none. Each row states what its launch would be worth if the market priced it like the tokens that already trade, and the exact steps to farm it.</p>
+      <p class="fitline" id="fitLine"></p>
     </div>
-    <dl class="stats" id="stats"></dl>
   </header>
+
+  <section class="kpis" id="kpis" aria-label="Radar key figures"></section>
+
+  <nav class="tabs" aria-label="Board view">
+    <button id="tabPre" class="tab active" type="button">Pre-token radar</button>
+    <button id="tabLive" class="tab" type="button">Already trading</button>
+    <span class="tabnote" id="tabNote"></span>
+  </nav>
 
   <section class="controls" aria-label="Filter and sort the board">
     <label>Search <input id="q" type="search" placeholder="Protocol, chain or category…" autocomplete="off"></label>
@@ -30,6 +38,7 @@
       <option value="name">Name, A to Z</option>
     </select></label>
     <label class="check"><input id="watchOnly" type="checkbox"> Watchlist only</label>
+    <label class="check"><input id="candOnly" type="checkbox"> Launch candidates only</label>
     <p class="count" id="count" aria-live="polite"></p>
   </section>
 
@@ -42,13 +51,13 @@
       </tr></thead>
       <tbody id="rows"></tbody>
     </table>
-    <p class="hint">Click a row — or its <b>Farm plan</b> button — for the protocol's detail view: the model breakdown and its six farm steps, with costs and times.</p>
+    <p class="hint">Click a row — or its <b>Farm plan</b> button — for the protocol's detail view: the model breakdown, its nearest live comps, and its farm steps, with costs and times.</p>
 
     <section id="detail" class="detail" hidden aria-label="Protocol detail"></section>
 
     <section class="live">
       <h2>Already trading — the market's own values</h2>
-      <p>These protocols record a token, so they are <strong>never ranked</strong> on this board. Their market-cap-to-TVL ratios are the peer anchors the model prices pre-token protocols against.</p>
+      <p>The 12 largest live-token protocols by market cap. They are <strong>never ranked</strong> in the pre-token radar: their market-cap-to-TVL ratios are the peer anchors the fitted model is tested against.</p>
       <table id="liveTable">
         <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Market cap</th><th>Mcap / TVL</th></tr></thead>
         <tbody id="liveRows"></tbody>
@@ -58,10 +67,16 @@
     <section class="method">
       <h2>How the implied value is worked out</h2>
       <p id="formula"></p>
-      <p>The peer ratio for a category is the median market-cap-to-TVL ratio of that category's live-token protocols (at least 3 peers); a thin category falls back to the global median. Growth is the protocol's own 7-day TVL change, clamped to −60%…+120%. Maturity is its age since DefiLlama began tracking it, capped at 3 years. Breadth is +3% per extra chain, at most +15%. No name is ever special-cased: the same function scores every row, and the board covers the whole watchlist plus every other rankable pre-token protocol the snapshot holds.</p>
+      <p>The ratio is <b>fitted</b>, not assumed: on the 128 live-token protocols that carry both a market cap and a TVL, least squares gives log(mcap/TVL) = a + b·log(TVL), with a negative slope — the bigger a protocol's TVL, the lower the multiple the market pays for it. Growth is the protocol's own 7-day TVL change, clamped to −60%…+120% at half weight; maturity is its age since DefiLlama began tracking it, rising from 0.6 to 1.0 over 3 years; breadth adds +3% per extra chain, at most +15%. Growth, maturity and breadth are stated priors, not fitted coefficients. No name is ever special-cased: the same function scores every row, and the board covers all 758 snapshot protocols — the whole watchlist plus every other protocol it holds.</p>
+      <h3>Validation — tested out of sample, not just fitted</h3>
+      <table class="valid" id="validTable">
+        <thead><tr><th>Estimator</th><th>Leave-one-out R²</th><th>Walk-forward R²</th><th>Median error</th></tr></thead>
+        <tbody id="validRows"></tbody>
+      </table>
+      <p id="validNote"></p>
       <h3>Peer anchors by category</h3>
       <ul class="peers" id="peers"></ul>
-      <p class="note">Implied value is this entry's own claim, never make.fun's. It does not predict whether or when a token is issued. Farm with a fresh wallet, only with funds you can afford to lose, and claim only from links the protocol itself publishes.</p>
+      <p class="note">Implied value is this entry's own claim, never make.fun's. It does not predict whether or when a token is issued. The market is noisy — the fitted model explains only part of the spread, so read each row's comps before you farm. Farm with a fresh wallet, only with funds you can afford to lose, and claim only from links the protocol itself publishes.</p>
     </section>
   </main>
   <footer><p id="sourceLine"></p></footer>

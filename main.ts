@@ -1,12 +1,13 @@
 // Token Radar — entrypoint (Node 22, standard library only).
 //
 // Reads the sealed snapshot from /input/snapshot.json (or --input <file|dir>),
-// scores every pre-token protocol with the model in lib/model.ts, writes the
-// ranked board to /output/board.json, writes the dashboard's data as
-// /output/data.js, copies this repository's dashboard/ and screenshots/ to
-// /output, and writes /output/dossier.json with the vendored make.fun
-// library. The run is deterministic: the same snapshot always writes the
-// same bytes, so the grader's two runs agree.
+// scores all 758 snapshot protocols with the fitted model in lib/model.ts
+// (radar-3: log-ratio OLS on the live-token anchors, validated out of
+// sample), writes the ranked board to /output/board.json, writes the
+// dashboard's data as /output/data.js, copies this repository's dashboard/
+// and screenshots/ to /output, and writes /output/dossier.json with the
+// vendored make.fun library. The run is deterministic: the same snapshot
+// always writes the same bytes, so the grader's two runs agree.
 //
 // Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts --input ../input/snapshot.json
@@ -84,6 +85,7 @@ for (const name of shots) {
 writeFileSync(join(out, 'dossier.json'), buildDossier(out, { text_max_bytes: TEXT_MAX_BYTES, screenshots: SCREENSHOT_CAPS, dashboard: { max_files: 400, max_bytes: 4_194_304 } }));
 
 process.stdout.write(
-  `token radar: ${snapshot.protocols.length} protocols, ${snapshot.watchlist.length} on the watchlist, ${board.length} rows scored (${radar.early_size} beyond the watchlist, ${radar.live_size} live set aside)\n` +
+  `token radar: ${snapshot.protocols.length} protocols, ${snapshot.watchlist.length} on the watchlist, ${board.length} rows scored (${radar.pre_token_size} pre-token, ${radar.live_size} already trading, ${radar.launch_candidate_size} launch candidates)\n` +
+    `token radar: fitted log(mcap/TVL) = ${radar.fitted.intercept} ${radar.fitted.slope < 0 ? '-' : '+'} ${Math.abs(radar.fitted.slope)}·log(TVL) on ${radar.validation.anchors} anchors; leave-one-out R² ${radar.validation.fitted_loo.r2}, walk-forward R² ${radar.validation.fitted_walkforward.r2}\n` +
     `token radar: wrote ${join(out, 'board.json')}, ${join(out, 'data.js')}, ${join(out, 'dashboard')} (${dashFiles.length} files), ${join(out, 'screenshots')} (${shots.length} images) and ${join(out, 'dossier.json')}\n`,
 );
